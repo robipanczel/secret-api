@@ -23,11 +23,8 @@ export default (app) => {
     next(err);
   });
   app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.json({
-      errors: {
-        message: err.message,
-      },
+    res.status(500).json({
+      message: err.message,
     });
   });
 };

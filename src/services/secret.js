@@ -12,7 +12,7 @@ export class SecretService {
       const hashedSecret = objectHash(secret);
 
       const isSecretAlreadySaved = await this.secretModel.findOne({
-        hashedSecret,
+        hash: hashedSecret,
       });
 
       if (isSecretAlreadySaved) {
@@ -53,11 +53,7 @@ export class SecretService {
       const secretData = await this.secretModel.findOne({ hash });
 
       if (!secretData) {
-        return {
-          errors: {
-            message: "This secret is not present in the database",
-          },
-        };
+        throw new Error("This secret is not present in the database");
       }
 
       if (
@@ -66,11 +62,7 @@ export class SecretService {
           moment()
       ) {
         await this.secretModel.findOneAndDelete({ hash });
-        return {
-          errors: {
-            message: "This secret is not present in the database",
-          },
-        };
+        throw new Error("This secret is not present in the database");
       }
 
       secretData.remainingViews -= 1;
