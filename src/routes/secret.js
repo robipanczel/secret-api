@@ -1,26 +1,32 @@
 import { Router } from "express";
+import secretModel from "../models/secret";
+import { SecretService } from "../services/secret";
+
+const secretService = new SecretService(secretModel);
 
 const router = Router();
 
 export default (app) => {
   app.use("/secret", router);
 
-  router.get("", async (req, res, next) => {
+  router.get("/:id", async (req, res, next) => {
     try {
-      console.log(req);
-      return res.status(200).json({ message: "hello I am a secret route" });
+      const secretResponseDTO = await secretService.getSecret(req.params.id);
+
+      return res.status(200).json({ ...secretResponseDTO });
     } catch (error) {
-      console.error(error);
       return next(error);
     }
   });
 
   router.post("", async (req, res, next) => {
     try {
-      console.log(req);
-      return res.status(200).json({ message: "hello I am a secret route" });
+      const secretResponseDTO = await secretService.createSecret(req.body);
+
+      return res.status(201).json({
+        ...secretResponseDTO,
+      });
     } catch (error) {
-      console.error(error);
       return next(error);
     }
   });

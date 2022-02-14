@@ -1,38 +1,15 @@
 import express from "express";
-import cors from "cors";
-import routes from "./routes";
+import configs from "./configs";
+import expressLoader from "./loaders/express";
+import mongooseLoader from "./loaders/mongoose";
 
 const app = express();
 
-app.get("/status", (req, res) => {
-  res.status(200).end();
-});
-app.head("/status", (req, res) => {
-  res.status(200).end();
-});
-
-app.use(cors());
-
-app.use(express.json);
-
-app.use("/api", routes());
-
-app.use((req, res, next) => {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
-});
-app.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.json({
-    errors: {
-      message: err.message,
-    },
-  });
-});
+const mongooseConnection = await mongooseLoader();
+expressLoader(app);
 
 app
-  .listen(3000, () => {
+  .listen(configs.port, () => {
     console.log(`Server is running on port 3000`);
   })
   .on("error", (err) => {
